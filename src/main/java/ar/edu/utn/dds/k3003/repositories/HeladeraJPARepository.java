@@ -39,7 +39,10 @@ public class HeladeraJPARepository {
     }
 
     public Heladera findById(Integer id) {
-        return this.entityManager.find(Heladera.class, id);
+        // return this.entityManager.find(Heladera.class, id);
+        Heladera heladera = this.entityManager.find(Heladera.class, id);
+        if (heladera == null) throw new NoSuchElementException();
+        return heladera;
     }
     
     public Collection<Heladera> all() {

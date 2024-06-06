@@ -34,7 +34,7 @@ public class Fachada implements FachadaHeladeras {
     }
 
     public Fachada(HeladeraJPARepository heladeraRepository, HeladeraMapper heladeraMapper, TemperaturaMapper temperaturaMapper) {
-        super();
+        this.entityManagerFactory = Persistence.createEntityManagerFactory("pruebadb");
         this.heladeraRepository = heladeraRepository;
         heladeraRepository.setEntityManager(entityManagerFactory.createEntityManager());
         this.heladeraMapper = heladeraMapper;
