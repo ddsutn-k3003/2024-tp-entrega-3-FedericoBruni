@@ -19,7 +19,9 @@ public class Heladera {
     @Setter @Getter
     private Integer id;
 
-    @Transient
+    @ElementCollection
+    @CollectionTable(name = "qr_heladera", joinColumns = @JoinColumn(name = "heladera_id"))
+    @Column(name = "qr")
     private Collection<String> viandas;
 
     @Column(name = "nombre")
