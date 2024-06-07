@@ -20,11 +20,6 @@ public class HeladeraJPARepository {
     @Getter
     private Collection<Heladera> heladeras;
 
-    private static Integer secuencia = 0;
-    private Integer nextId() {
-        secuencia = secuencia + 1;
-        return secuencia ; }
-
     public HeladeraJPARepository() {
         this.heladeras = new ArrayList<>();
     }

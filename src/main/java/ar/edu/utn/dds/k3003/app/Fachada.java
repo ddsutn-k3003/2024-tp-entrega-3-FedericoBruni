@@ -9,6 +9,7 @@ import ar.edu.utn.dds.k3003.repositories.HeladeraJPARepository;
 import ar.edu.utn.dds.k3003.repositories.HeladeraMapper;
 import ar.edu.utn.dds.k3003.repositories.HeladeraRepository;
 import ar.edu.utn.dds.k3003.repositories.TemperaturaMapper;
+import lombok.Getter;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -19,6 +20,8 @@ import java.util.*;
 public class Fachada implements FachadaHeladeras {
 
     private HeladeraJPARepository heladeraRepository;
+
+    @Getter
     private EntityManagerFactory entityManagerFactory;
 
     private HeladeraMapper heladeraMapper;
@@ -35,6 +38,14 @@ public class Fachada implements FachadaHeladeras {
 
     public Fachada(HeladeraJPARepository heladeraRepository, HeladeraMapper heladeraMapper, TemperaturaMapper temperaturaMapper) {
         this.entityManagerFactory = Persistence.createEntityManagerFactory("pruebadb");
+        this.heladeraRepository = heladeraRepository;
+        heladeraRepository.setEntityManager(entityManagerFactory.createEntityManager());
+        this.heladeraMapper = heladeraMapper;
+        this.temperaturaMapper = temperaturaMapper;
+    }
+
+    public Fachada(HeladeraJPARepository heladeraRepository, HeladeraMapper heladeraMapper, TemperaturaMapper temperaturaMapper, EntityManagerFactory entityManagerFactory) {
+        this.entityManagerFactory = entityManagerFactory;
         this.heladeraRepository = heladeraRepository;
         heladeraRepository.setEntityManager(entityManagerFactory.createEntityManager());
         this.heladeraMapper = heladeraMapper;

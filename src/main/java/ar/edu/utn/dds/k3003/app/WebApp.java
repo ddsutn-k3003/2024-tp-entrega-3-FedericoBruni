@@ -13,11 +13,14 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import ar.edu.utn.dds.k3003.facades.dtos.Constants;
 import io.javalin.Javalin;
 
+import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.TimeZone;
 
 public class WebApp {
@@ -35,11 +38,15 @@ public class WebApp {
 
 
         HeladeraJPARepository heladeraJPARepository = new HeladeraJPARepository();
+        EntityManagerFactory entityManagerFactory = startEntityManagerFactory();
 
         // Si veo que en ningún controller uso directamente los repo o mapper (el mapper da igual), saco el constructor con todos los parámetros y lo dejo como new Fachada();
-        Fachada fachadaHeladeras = new Fachada(heladeraJPARepository, heladeraMapper, temperaturaMapper);
+        Fachada fachadaHeladeras = new Fachada(heladeraJPARepository, heladeraMapper, temperaturaMapper, entityManagerFactory);
         var objectMapper = createObjectMapper();
         fachadaHeladeras.setViandasProxy(new ViandasProxy(objectMapper));
+
+
+
 
 
         // End Cosas.
@@ -77,4 +84,21 @@ public class WebApp {
         objectMapper.setDateFormat(sdf);
         return objectMapper;
     }
+
+    public static EntityManagerFactory startEntityManagerFactory() {
+// https://stackoverflow.com/questions/8836834/read-environment-variables-in-persistence-xml-file
+        Map<String, String> env = System.getenv();
+        Map<String, Object> configOverrides = new HashMap<String, Object>();
+        String[] keys = new String[] { "javax.persistence.jdbc.url", "javax.persistence.jdbc.user",
+                "javax.persistence.jdbc.password", "javax.persistence.jdbc.driver", "hibernate.hbm2ddl.auto",
+                "hibernate.connection.pool_size", "hibernate.show_sql" };
+        for (String key : keys) {
+            if (env.containsKey(key)) {
+                String value = env.get(key);
+                configOverrides.put(key, value);
+            }
+        }
+        return Persistence.createEntityManagerFactory("fachada_heladeras", configOverrides);
+    }
+
 }
