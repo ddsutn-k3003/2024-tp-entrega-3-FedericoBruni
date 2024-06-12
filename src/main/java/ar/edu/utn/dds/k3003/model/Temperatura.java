@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 @Table(name = "temperatura")
 public class Temperatura {
 
+
     @Column
     @Getter
     private Integer temperatura;

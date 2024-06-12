@@ -19,9 +19,12 @@ public class Heladera {
     @Setter @Getter
     private Integer id;
 
+    //@ElementCollection
+    //@CollectionTable(name = "qr_heladera", joinColumns = @JoinColumn(name = "heladera_id"))
+    //@Column(name = "qr")
     @ElementCollection
-    @CollectionTable(name = "qr_heladera", joinColumns = @JoinColumn(name = "heladera_id"))
-    @Column(name = "qr")
+    @CollectionTable(name = "heladera_viandas", joinColumns = @JoinColumn(name = "heladera_id"))
+    @Column(name = "vianda")
     private Collection<String> viandas;
 
     @Column(name = "nombre")
