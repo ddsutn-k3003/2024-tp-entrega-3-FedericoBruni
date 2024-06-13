@@ -14,12 +14,8 @@ public class DepositarViandaController {
     }
 
     public void depositarVianda(Context context) throws BadRequestResponse {
-        //ViandaDTO viandaDTO = context.bodyAsClass(ViandaDTO.class); // Rompe pq ViandaDTO no tiene constructor. Esperar a que en Slack digan qué hacer..
-        //this.fachadaHeladeras.depositar(viandaDTO.getHeladeraId(), viandaDTO.getCodigoQR());
-
-        // Ahora tira error de solicitud, xq no existe ninguna vianda que pueda guardar..
         try {
-            ViandaDTO viandaDTO = context.bodyAsClass(ViandaDTO.class); // Rompe pq ViandaDTO no tiene constructor. Esperar a que en Slack digan qué hacer..
+            ViandaDTO viandaDTO = context.bodyAsClass(ViandaDTO.class);
             this.fachadaHeladeras.depositar(viandaDTO.getHeladeraId(), viandaDTO.getCodigoQR());
             context.status(200).result("Vianda depositada correctamente.");
         } catch (NoSuchElementException e) {

@@ -33,10 +33,7 @@ public class HeladeraJPARepository {
         this.entityManagerFactory = entityManagerFactory;
     }
     public Heladera save(Heladera heladera) {
-        //entityManager.getTransaction().begin();
         entityManager.persist(heladera);
-        //entityManager.getTransaction().commit();
-        //entityManager.close();
         return heladera;
     }
 
@@ -55,15 +52,5 @@ public class HeladeraJPARepository {
         criteriaQuery.select(root);
         return entityManager.createQuery(criteriaQuery).getResultList();
     }
-
-    public void guardarVianda(Heladera heladera, String qrVianda){
-        EntityManager em = this.entityManagerFactory.createEntityManager();
-        em.getTransaction().begin();
-        heladera.guardar(qrVianda);
-        //em.persist(heladera);
-        em.getTransaction().commit();
-        em.close();
     }
-
-}
 
