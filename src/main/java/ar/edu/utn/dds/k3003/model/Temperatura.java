@@ -8,18 +8,19 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "temperatura")
 public class Temperatura {
-
+    @Id @GeneratedValue (strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column
     @Getter
     private Integer temperatura;
 
-    @Id
+    @JoinColumn(name = "heladera_id", nullable = false)
     @Getter
     private Integer heladeraId;
 
 
-    @Transient //algo hay de Locale, ver..
+    @Column //algo hay de Locale, ver..
     @Getter
     private LocalDateTime fechaMedicion;
 

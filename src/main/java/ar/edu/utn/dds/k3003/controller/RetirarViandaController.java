@@ -6,10 +6,11 @@ import ar.edu.utn.dds.k3003.facades.dtos.RetiroDTO;
 import io.javalin.http.BadRequestResponse;
 import io.javalin.http.Context;
 
+import javax.persistence.EntityManager;
 import java.util.NoSuchElementException;
 
 public class RetirarViandaController {
-    private FachadaHeladeras fachadaHeladeras;
+    private Fachada fachadaHeladeras; // uso Fachada en vez de FachadaHeladeras para el getentitymanager..
     public RetirarViandaController(Fachada fachadaHeladeras) {
         this.fachadaHeladeras = fachadaHeladeras;
     }
@@ -20,6 +21,9 @@ public class RetirarViandaController {
             this.fachadaHeladeras.retirar(retiroDTO);
             context.status(200).result("Vianda retirada correctamente.");
         } catch (NoSuchElementException e) {
+            EntityManager em = this.fachadaHeladeras.getEntityManager();
+            em.getTransaction().commit();
+            em.close();
             throw new BadRequestResponse("Error de solicitud.");
         }
     }

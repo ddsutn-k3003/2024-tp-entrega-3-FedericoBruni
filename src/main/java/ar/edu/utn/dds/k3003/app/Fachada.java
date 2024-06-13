@@ -29,15 +29,15 @@ public class Fachada implements FachadaHeladeras {
     private FachadaViandas fachadaViandas;
 
     public Fachada() {
-        this.entityManagerFactory = Persistence.createEntityManagerFactory("pruebadb");
-        this.heladeraRepository = new HeladeraJPARepository(entityManagerFactory.createEntityManager());
+        this.entityManagerFactory = Persistence.createEntityManagerFactory("fachada_heladeras");
+        this.heladeraRepository = new HeladeraJPARepository(entityManagerFactory.createEntityManager(), entityManagerFactory);
         this.heladeraMapper = new HeladeraMapper();
         this.temperaturaMapper = new TemperaturaMapper();
 
     }
 
     public Fachada(HeladeraJPARepository heladeraRepository, HeladeraMapper heladeraMapper, TemperaturaMapper temperaturaMapper) {
-        this.entityManagerFactory = Persistence.createEntityManagerFactory("pruebadb");
+        this.entityManagerFactory = Persistence.createEntityManagerFactory("fachada_heladeras");
         this.heladeraRepository = heladeraRepository;
         heladeraRepository.setEntityManager(entityManagerFactory.createEntityManager());
         this.heladeraMapper = heladeraMapper;
@@ -47,6 +47,7 @@ public class Fachada implements FachadaHeladeras {
     public Fachada(HeladeraJPARepository heladeraRepository, HeladeraMapper heladeraMapper, TemperaturaMapper temperaturaMapper, EntityManagerFactory entityManagerFactory) {
         this.entityManagerFactory = entityManagerFactory;
         this.heladeraRepository = heladeraRepository;
+        heladeraRepository.setEntityManagerFactory(entityManagerFactory);
         heladeraRepository.setEntityManager(entityManagerFactory.createEntityManager());
         this.heladeraMapper = heladeraMapper;
         this.temperaturaMapper = temperaturaMapper;
@@ -55,11 +56,14 @@ public class Fachada implements FachadaHeladeras {
 
     @Override
     public HeladeraDTO agregar(HeladeraDTO heladeraDTO) {
-        Heladera heladera = new Heladera(heladeraDTO.getNombre());
 
-        this.heladeraRepository.getEntityManager().getTransaction().begin();
+        Heladera heladera = new Heladera(heladeraDTO.getNombre());
+        EntityManager em = this.entityManagerFactory.createEntityManager();
+        this.heladeraRepository.setEntityManager(em);
+        em.getTransaction().begin();
         heladera = this.heladeraRepository.save(heladera);
-        this.heladeraRepository.getEntityManager().getTransaction().commit();
+        em.getTransaction().commit();
+        em.close();
 
         return this.heladeraMapper.map(heladera);
 
@@ -68,10 +72,18 @@ public class Fachada implements FachadaHeladeras {
     @Override
     public void depositar(Integer heladeraId, String qrVianda) throws NoSuchElementException {
 
-        this.heladeraRepository.getEntityManager().getTransaction().begin();
+        EntityManager em = this.entityManagerFactory.createEntityManager();
+        this.heladeraRepository.setEntityManager(em);
+        em.getTransaction().begin();
+
         Heladera heladera = this.heladeraRepository.findById(heladeraId);
+
         heladera.guardar(qrVianda);
-        this.heladeraRepository.getEntityManager().getTransaction().commit();
+        em.persist(heladera);
+
+        //this.heladeraRepository.getEntityManager().getTransaction().commit();
+        em.getTransaction().commit();
+        em.close();
 
         ViandaDTO viandaDTO = this.fachadaViandas.buscarXQR(qrVianda);
         this.fachadaViandas.modificarEstado(viandaDTO.getCodigoQR(), EstadoViandaEnum.DEPOSITADA);
@@ -84,24 +96,33 @@ public class Fachada implements FachadaHeladeras {
 
     @Override
     public void retirar(RetiroDTO retiroDTO) throws NoSuchElementException {
-        this.heladeraRepository.getEntityManager().getTransaction().begin();
+        EntityManager em = this.entityManagerFactory.createEntityManager();
+        this.heladeraRepository.setEntityManager(em);
+        em.getTransaction().begin();
         Heladera heladera = this.heladeraRepository.findById(retiroDTO.getHeladeraId());
         heladera.retirar(retiroDTO.getQrVianda());
-        this.heladeraRepository.getEntityManager().getTransaction().commit();
+        em.persist(heladera);
         ViandaDTO viandaDTO = this.fachadaViandas.buscarXQR(retiroDTO.getQrVianda());
         this.fachadaViandas.modificarEstado(viandaDTO.getCodigoQR(), EstadoViandaEnum.RETIRADA);
+        em.getTransaction().commit();
+        em.close();
     }
 
     @Override
     public void temperatura(TemperaturaDTO temperaturaDTO) {
         Temperatura temperatura = new Temperatura(temperaturaDTO.getTemperatura(), temperaturaDTO.getHeladeraId(), temperaturaDTO.getFechaMedicion());
+
+
+        EntityManager em = this.entityManagerFactory.createEntityManager();
+        this.heladeraRepository.setEntityManager(em);
+        em.getTransaction().begin();
         Heladera heladera = this.heladeraRepository.findById(temperaturaDTO.getHeladeraId());
 
-        this.heladeraRepository.getEntityManager().getTransaction().begin();
-        heladera = this.heladeraRepository.save(heladera);
-        this.heladeraRepository.getEntityManager().getTransaction().commit();
-
         heladera.setTemperatura(temperatura);
+        this.heladeraRepository.save(heladera);
+
+        em.getTransaction().commit();
+        em.close();
     }
 
     @Override
@@ -119,5 +140,9 @@ public class Fachada implements FachadaHeladeras {
 
     public HeladeraDTO buscarXId(Integer heladeraId) throws NoSuchElementException {
         return this.heladeraMapper.map(this.heladeraRepository.findById(heladeraId));
+    }
+
+    public EntityManager getEntityManager(){
+        return this.heladeraRepository.getEntityManager();
     }
 }

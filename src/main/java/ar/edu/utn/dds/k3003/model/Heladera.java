@@ -5,10 +5,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 @Entity
 @Table(name = "heladera")
@@ -62,7 +59,11 @@ public class Heladera {
     }
 
     public void retirar(String qrVianda) {
-        this.viandas.remove(qrVianda);
+        if (this.viandas.contains(qrVianda)) {
+            this.viandas.remove(qrVianda);
+        } else {
+            throw new NoSuchElementException();
+        }
     }
 
     public Integer getCantidadViandas() {

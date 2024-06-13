@@ -39,6 +39,7 @@ public class WebApp {
 
         HeladeraJPARepository heladeraJPARepository = new HeladeraJPARepository();
         EntityManagerFactory entityManagerFactory = startEntityManagerFactory();
+        heladeraJPARepository.setEntityManagerFactory(entityManagerFactory);
 
         // Si veo que en ningún controller uso directamente los repo o mapper (el mapper da igual), saco el constructor con todos los parámetros y lo dejo como new Fachada();
         Fachada fachadaHeladeras = new Fachada(heladeraJPARepository, heladeraMapper, temperaturaMapper, entityManagerFactory);
@@ -53,7 +54,7 @@ public class WebApp {
 
         // Controllers.
         var agregarHeladeraController = new AgregarHeladeraController(fachadaHeladeras);
-        var obtenerHeladeraController = new ObtenerHeladeraController(fachadaHeladeras);
+        var obtenerHeladeraController = new ObtenerHeladeraController(fachadaHeladeras, entityManagerFactory, heladeraJPARepository);
         var depositarViandaController = new DepositarViandaController(fachadaHeladeras);
         var listaHeladeraController = new ListaHeladeraController(heladeraRepository, heladeraMapper); // de test nomás. dsp borrarlo! -> y borrar Repo, Mapper, e iniciar solo Fachada() sin params.
         var retirarViandaController = new RetirarViandaController(fachadaHeladeras);
