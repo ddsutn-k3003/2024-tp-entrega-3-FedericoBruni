@@ -9,7 +9,10 @@ import ar.edu.utn.dds.k3003.repositories.HeladeraJPARepository;
 import ar.edu.utn.dds.k3003.repositories.HeladeraMapper;
 import ar.edu.utn.dds.k3003.repositories.HeladeraRepository;
 import ar.edu.utn.dds.k3003.repositories.TemperaturaMapper;
+import com.sun.net.httpserver.HttpsServer;
+import io.javalin.http.NotFoundResponse;
 import lombok.Getter;
+import org.hibernate.annotations.NotFound;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -78,6 +81,14 @@ public class Fachada implements FachadaHeladeras {
 
         Heladera heladera = this.heladeraRepository.findById(heladeraId);
 
+        ViandaDTO viandaDTO;
+        try {
+            viandaDTO = this.fachadaViandas.buscarXQR(qrVianda);
+        } catch (NotFoundResponse e) {
+            throw new NoSuchElementException();
+        }
+        this.fachadaViandas.modificarEstado(viandaDTO.getCodigoQR(), EstadoViandaEnum.DEPOSITADA);
+
         heladera.guardar(qrVianda);
         em.persist(heladera);
 
@@ -85,8 +96,7 @@ public class Fachada implements FachadaHeladeras {
         em.getTransaction().commit();
         em.close();
 
-        ViandaDTO viandaDTO = this.fachadaViandas.buscarXQR(qrVianda);
-        this.fachadaViandas.modificarEstado(viandaDTO.getCodigoQR(), EstadoViandaEnum.DEPOSITADA);
+
     }
 
     @Override
