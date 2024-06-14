@@ -24,7 +24,7 @@ public class ObtenerHeladeraController {
 
 
     public void obtenerHeladera(Context context) throws NotFoundResponse {
-        EntityManager em = this.entityManagerFactory.createEntityManager();
+        EntityManager em = this.entityManagerFactory.createEntityManager(); // esto está raro creado acá, debería estar en fachada, y dsp hacer un get
         this.heladeraRepository.setEntityManager(em);
         em.getTransaction().begin();
         try {

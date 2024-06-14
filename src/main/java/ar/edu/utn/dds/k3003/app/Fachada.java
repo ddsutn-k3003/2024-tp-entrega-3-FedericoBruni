@@ -137,9 +137,14 @@ public class Fachada implements FachadaHeladeras {
 
     @Override
     public List<TemperaturaDTO> obtenerTemperaturas(Integer heladeraId) {
+        EntityManager em = this.entityManagerFactory.createEntityManager();
+        heladeraRepository.setEntityManager(em);
+        em.getTransaction().begin();
         Heladera heladera = this.heladeraRepository.findById(heladeraId);
         List<TemperaturaDTO> temperaturasHeladera = new ArrayList<>();
         heladera.getTemperaturas().forEach(temperatura -> temperaturasHeladera.add(this.temperaturaMapper.map(temperatura)));
+        em.getTransaction().commit();
+        em.close();
         return temperaturasHeladera;
     }
     @Override
