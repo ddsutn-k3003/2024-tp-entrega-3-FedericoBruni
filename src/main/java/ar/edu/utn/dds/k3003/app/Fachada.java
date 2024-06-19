@@ -10,6 +10,7 @@ import ar.edu.utn.dds.k3003.repositories.HeladeraMapper;
 import ar.edu.utn.dds.k3003.repositories.HeladeraRepository;
 import ar.edu.utn.dds.k3003.repositories.TemperaturaMapper;
 import com.sun.net.httpserver.HttpsServer;
+import io.javalin.http.BadRequestResponse;
 import io.javalin.http.NotFoundResponse;
 import lombok.Getter;
 import org.hibernate.annotations.NotFound;
@@ -87,6 +88,13 @@ public class Fachada implements FachadaHeladeras {
         } catch (NotFoundResponse e) {
             throw new NoSuchElementException();
         }
+
+        // No funciona, ahora me deja depositar la misma vianda varias veces. Está bien en el componente de viandas?
+        if (viandaDTO.getEstado().equals(EstadoViandaEnum.DEPOSITADA)){
+            throw new BadRequestResponse("La vianda ya está depositada en " + viandaDTO.getHeladeraId());
+        }
+
+
         this.fachadaViandas.modificarEstado(viandaDTO.getCodigoQR(), EstadoViandaEnum.DEPOSITADA);
 
         heladera.guardar(qrVianda);

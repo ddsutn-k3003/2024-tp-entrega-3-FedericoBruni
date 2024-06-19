@@ -4,6 +4,9 @@ import ar.edu.utn.dds.k3003.facades.dtos.HeladeraDTO;
 import io.javalin.http.BadRequestResponse;
 import io.javalin.http.Context;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class AgregarHeladeraController {
     private Fachada fachadaHeladeras;
     public AgregarHeladeraController(Fachada fachadaHeladeras) {
@@ -14,7 +17,10 @@ public class AgregarHeladeraController {
     public void agregar(Context context) throws BadRequestResponse {
         try {
             HeladeraDTO heladeraDTO = context.bodyAsClass(HeladeraDTO.class);
-            context.status(200).result("Heladera agregada correctamente.").json(this.fachadaHeladeras.agregar(heladeraDTO));
+            Map<String, Object> response = new HashMap<>();
+            response.put("Mensaje", "Heladera agregada correctamente");
+            response.put("Heladera", this.fachadaHeladeras.agregar(heladeraDTO));
+            context.status(200).json(response);
         } catch (Exception e) {
             throw new BadRequestResponse("Error de solicitud.");
         }

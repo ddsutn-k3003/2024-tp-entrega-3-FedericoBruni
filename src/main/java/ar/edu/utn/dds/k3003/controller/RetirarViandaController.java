@@ -7,6 +7,8 @@ import io.javalin.http.BadRequestResponse;
 import io.javalin.http.Context;
 
 import javax.persistence.EntityManager;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 public class RetirarViandaController {
@@ -19,7 +21,13 @@ public class RetirarViandaController {
         try {
             RetiroDTO retiroDTO = context.bodyAsClass(RetiroDTO.class);
             this.fachadaHeladeras.retirar(retiroDTO);
-            context.status(200).result("Vianda retirada correctamente.");
+            //context.status(200).result("Vianda retirada correctamente.");
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("Mensaje", "Vianda retirada correctamente");
+            response.put("Retiro", retiroDTO);
+            context.status(200).json(response);
+
         } catch (NoSuchElementException e) {
             EntityManager em = this.fachadaHeladeras.getEntityManager();
             em.getTransaction().commit();

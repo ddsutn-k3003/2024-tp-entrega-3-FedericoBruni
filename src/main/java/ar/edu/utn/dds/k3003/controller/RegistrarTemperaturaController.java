@@ -7,6 +7,8 @@ import io.javalin.http.BadRequestResponse;
 import io.javalin.http.Context;
 
 import javax.persistence.EntityManager;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class RegistrarTemperaturaController {
@@ -20,7 +22,11 @@ public class RegistrarTemperaturaController {
         try {
             TemperaturaDTO temperaturaDTO = context.bodyAsClass(TemperaturaDTO.class);
             this.fachadaHeladeras.temperatura(temperaturaDTO);
-            context.status(200).result("Temperatura registrada correctamente.");
+            Map<String, Object> response = new HashMap<>();
+            response.put("Mensaje", "Temperatura registrada correctamente");
+            response.put("Temperatura", temperaturaDTO);
+            context.status(200).json(response);
+
         } catch (Exception e) {
             EntityManager em = this.fachadaHeladeras.getEntityManager();
             em.getTransaction().commit();
